@@ -13,7 +13,8 @@
     "browserify": "^10.0.0",
     "istanbul-harmony": "0",
     "mocha": "^2.0.0",
-    "mz": "^1.0.2"
+    "mz": "^1.0.2",
+    "rx": "^2.5.2"
   },
   "scripts": {
     "test": "mocha --harmony",

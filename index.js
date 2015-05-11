@@ -118,6 +118,7 @@ function toPromise(obj) {
   if ('function' == typeof obj) return thunkToPromise.call(this, obj);
   if (Array.isArray(obj)) return arrayToPromise.call(this, obj);
   if (isObject(obj)) return objectToPromise.call(this, obj);
+  if (isObservable(obj)) return thunkToObservable.call(this, obj);
   return obj;
 }
 
@@ -183,6 +184,38 @@ function objectToPromise(obj){
       results[key] = res;
     }));
   }
+}
+
+/**
+ * Convert a thunk to `Rx.Observable`.
+ *
+ * @param {Object} Rx.Observable
+ * @return {Promise}
+ * @api private
+ */
+
+function thunkToObservable(observer) {
+  return new Promise(function(resolve, reject) {
+    var dispose = observer.subscribe(function(res) {
+      resolve(toPromise.call(this, res));
+      dispose.dispose();
+    }, function(err) {
+      reject(err);
+      dispose.dispose();
+    });
+  });
+}
+
+/**
+ * Check if `obj` is a Rx.Observable.
+ *
+ * @param {Object} obj
+ * @return {Boolean}
+ * @api private
+ */
+
+function isObservable(obj) {
+  return obj && 'function' == typeof obj.subscribe;
 }
 
 /**
